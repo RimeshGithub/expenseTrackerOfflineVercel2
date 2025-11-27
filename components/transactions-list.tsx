@@ -688,7 +688,10 @@ export function TransactionsList() {
                       <div>
                         <div className="flex gap-2">
                           <Badge variant={t.type === "income" ? "default" : "destructive"}>{cat.name}</Badge>
-                          <Badge variant="outline"><p className="font-bold mr-px">{acc.icon}</p>{acc.name.length > 18 ? acc.name.slice(0, 18) + "..." : acc.name}</Badge>
+                          <Badge variant="outline" className="max-sm:max-w-[140px] flex items-center gap-1">
+                            <span className="font-bold shrink-0">{acc.icon}</span>
+                            <span className="truncate">{acc.name}</span>
+                          </Badge>
                         </div>
                         <div className="text-xs mt-1 text-muted-foreground">
                           {format(new Date(t.date), "MMM dd, yyyy")} AD | {bsMonths[bs.month]} {bs.date}, {bs.year} BS

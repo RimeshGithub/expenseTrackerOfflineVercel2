@@ -176,7 +176,7 @@ export function AddTransactionForm() {
                   ))}
                 </SelectContent>
               </Select>
-              <Button type="button" onClick={() => router.push("/dashboard/settings#accountManager")} variant="outline"><Plus className="w-4 h-4 scale-125" /></Button>
+              <Button type="button" onClick={() => router.push("/dashboard/settings#accountManager")} variant="outline" className="rounded-full h-9 w-9"><Plus className="w-4 h-4 scale-125" /></Button>
             </div>
           </div>
   
@@ -214,7 +214,7 @@ export function AddTransactionForm() {
                   ))}
                 </SelectContent>
               </Select>
-              <Button type="button" onClick={() => router.push("/dashboard/settings#categoryManager")} variant="outline"><Plus className="w-4 h-4 scale-125" /></Button>
+              <Button type="button" onClick={() => router.push("/dashboard/settings#categoryManager")} variant="outline" className="rounded-full h-9 w-9"><Plus className="w-4 h-4 scale-125" /></Button>
             </div>
           </div>
 
