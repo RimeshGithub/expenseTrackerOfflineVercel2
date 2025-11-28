@@ -34,20 +34,22 @@ export interface MonthlyStats {
 }
 
 export const EXPENSE_CATEGORIES: Category[] = [
-  { id: "food", name: "Food", icon: "🍽️", color: "bg-red-500", type: "expense" },
+  { id: "food", name: "Food", icon: "🍽️", color: "bg-cyan-600", type: "expense" },
   { id: "transport", name: "Transport", icon: "🚗", color: "bg-blue-500", type: "expense" },
   { id: "entertainment", name: "Entertainment", icon: "🎬", color: "bg-purple-500", type: "expense" },
   { id: "bills", name: "Bills", icon: "📄", color: "bg-yellow-500", type: "expense" },
   { id: "rent", name: "Rent Expense", icon: "🏠", color: "bg-teal-500", type: "expense" },
   { id: "shopping", name: "Shopping", icon: "🛍️", color: "bg-pink-500", type: "expense" },
   { id: "health", name: "Health", icon: "🏥", color: "bg-green-500", type: "expense" },
+  { id: "debit-transfer", name: "Debit Transfer", icon: "💸", color: "bg-red-500", type: "expense" },
   { id: "other-expense", name: "Other Expense", icon: "📦", color: "bg-orange-500", type: "expense" },
 ]
 
 export const INCOME_CATEGORIES: Category[] = [
   { id: "salary", name: "Salary", icon: "💼", color: "bg-emerald-500", type: "income" },
-  { id: "rent-income", name: "Rent Income", icon: "🏠", color: "bg-blue-500", type: "income" },
-  { id: "investment", name: "Investment", icon: "📈", color: "bg-green-500", type: "income" },
+  { id: "rent-income", name: "Rent Income", icon: "🏠", color: "bg-blue-400", type: "income" },
+  { id: "investment", name: "Investment", icon: "📈", color: "bg-teal-500", type: "income" },
+  { id: "credit-transfer", name: "Credit Transfer", icon: "💸", color: "bg-green-400", type: "income" },
   { id: "other-income", name: "Other Income", icon: "💰", color: "bg-yellow-500", type: "income" },
 ]
 

@@ -330,7 +330,7 @@ export default function SettingsPage() {
         ].join("\n")
 
         content = csvContent
-        filename = `expense-tracker-${stamp}.csv`
+        filename = `nepali-wallet-${stamp}.csv`
         mimeType = "text/csv"
       } else {
         const filteredMap = filtered.map((t) => ({
@@ -343,7 +343,7 @@ export default function SettingsPage() {
         }));
 
         content = JSON.stringify(filteredMap, null, 2)
-        filename = `expense-tracker-${stamp}.txt`
+        filename = `nepali-wallet-${stamp}.txt`
         mimeType = "text/plain"
       }
 
@@ -371,7 +371,7 @@ export default function SettingsPage() {
       // ✅ ANDROID EXPORT (fix for parent directory error)
       // ---------------------------------------------------------
       if (Capacitor.getPlatform() === "android") {
-        const folder = "ExpenseTracker"
+        const folder = "NepaliWallet"
 
         // Create folder if missing
         await Filesystem.mkdir({

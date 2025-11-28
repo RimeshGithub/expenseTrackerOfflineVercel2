@@ -41,7 +41,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-primary">Welcome Back</CardTitle>
-          <CardDescription>Sign in to your expense tracker account</CardDescription>
+          <CardDescription>Sign in to your NepaliWallet account</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

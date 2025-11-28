@@ -21,24 +21,27 @@ import { EditTransactionForm } from "./edit-transaction-form"
 import NepaliDate from "nepali-date-converter"
 import { getCurrency } from "@/hooks/use-currency"
 import { useToast } from "@/hooks/use-toast"
-import type { Category } from "@/lib/types"
 import { Capacitor } from "@capacitor/core"
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem"
 import { useEditFormStore } from "@/hooks/use-editform-store"
-import { get } from "http"
 
 export function TransactionsList() {
   const { transactions: trans, loading, deleteTransaction } = useTransactions()
   const [transactions, setTransactions] = useState<Transaction[]>([])
 
   useEffect(() => {
-    setTransactions(trans)
+    setTransactions((prev) => {
+      // Create a map of previous transactions by id
+      const prevMap = new Map(prev.map((t) => [t.id, t]))
+
+      // Map over the new `trans` array
+      return trans.map((t) => prevMap.get(t.id) || t)
+    })
   }, [trans])
 
   const { toast } = useToast()
   const { expenseCategories, incomeCategories, getCustomCategories } = useCategories()
   const { accounts } = useAccounts()
-  const [customCategories, setCustomCategories] = useState<Category[]>([...getCustomCategories('expense'), ...getCustomCategories('income')])
   const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([])
   const [filteredYearMonths, setFilteredYearMonths] = useState<Transaction[]>([])
 
@@ -63,6 +66,11 @@ export function TransactionsList() {
     const stored = localStorage.getItem("useBSDate")
     if (stored !== null) {
       setUseBSDate(JSON.parse(stored))
+    }
+
+    const storedFilterAccount = localStorage.getItem("filterAccountTransactionsList")
+    if (storedFilterAccount !== null) {
+      setFilterAccount(storedFilterAccount)
     }
   }, [])
 
@@ -89,7 +97,20 @@ export function TransactionsList() {
 
   // Filtering logic
   useEffect(() => {
-    let filtered = sortAsc ? transactions.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) : transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    let filtered = [...transactions].sort((a, b) => {
+      const dateDiff = sortAsc
+        ? new Date(a.date).getTime() - new Date(b.date).getTime()
+        : new Date(b.date).getTime() - new Date(a.date).getTime()
+
+      // If dates are the same, sort by createdAt
+      if (dateDiff === 0) {
+        return sortAsc
+          ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      }
+
+      return dateDiff
+    })
 
     // Date filtering based on selected calendar type
     if (filterYear !== "all") {
@@ -114,7 +135,14 @@ export function TransactionsList() {
       })
     }
 
-    setFilteredYearMonths([...filtered].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()))
+    setFilteredYearMonths(
+      [...filtered].sort((a, b) => {
+        const dateDiff = new Date(a.date).getTime() - new Date(b.date).getTime()
+        if (dateDiff !== 0) return dateDiff
+
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      })
+    )
 
     // Search
     if (searchTerm) {
@@ -257,7 +285,7 @@ export function TransactionsList() {
         ].join("\n")
 
         content = csvContent
-        filename = `expense-tracker-${stamp}.csv`
+        filename = `nepali-wallet-${stamp}.csv`
         mimeType = "text/csv"
       } else {
         const filtered = filteredYearMonths.map((t) => ({
@@ -270,7 +298,7 @@ export function TransactionsList() {
         }));
 
         content = JSON.stringify(filtered, null, 2)
-        filename = `expense-tracker-${stamp}.txt`
+        filename = `nepali-wallet-${stamp}.txt`
         mimeType = "text/plain"
       }
 
@@ -298,7 +326,7 @@ export function TransactionsList() {
       // ✅ ANDROID EXPORT (fix for parent directory error)
       // ---------------------------------------------------------
       if (Capacitor.getPlatform() === "android") {
-        const folder = "ExpenseTracker"
+        const folder = "NepaliWallet"
 
         // Create folder if missing
         await Filesystem.mkdir({
@@ -393,7 +421,7 @@ export function TransactionsList() {
                 <Label htmlFor="account-filter" className="text-sm font-medium whitespace-nowrap">
                   Account
                 </Label>
-                <Select value={filterAccount} onValueChange={setFilterAccount}>
+                <Select value={filterAccount} onValueChange={(val) => {setFilterAccount(val); localStorage.setItem("filterAccountTransactionsList", val)}}>
                   <SelectTrigger id="account-filter" className="w-[170px] bg-background border-border shadow-none">
                     <SelectValue placeholder="Account" />
                   </SelectTrigger>

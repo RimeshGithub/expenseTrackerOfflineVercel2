@@ -47,6 +47,7 @@ export function useAccounts() {
         if (success) {
           localStorage.removeItem("filterAccountAccounts")
           localStorage.removeItem("filterAccountDashboard")
+          localStorage.removeItem("filterAccountTransactionsList")
           loadAccounts()
         }
         return success

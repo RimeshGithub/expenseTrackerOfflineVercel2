@@ -60,6 +60,7 @@ export function AccountsList() {
 
   const [filterYear, setFilterYear] = useState(todayADYear.toString())
   const [filterMonth, setFilterMonth] = useState(todayADMonth.toString())
+  const [filteredYearMonths, setFilteredYearMonths] = useState<Transaction[]>([])
   const [sortAsc, setSortAsc] = useState(false)
 
   // Month names
@@ -78,7 +79,20 @@ export function AccountsList() {
 
   // Filtering logic
   useEffect(() => {
-    let filtered = sortAsc ? transactions.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) : transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    let filtered = [...transactions].sort((a, b) => {
+      const dateDiff = sortAsc
+        ? new Date(a.date).getTime() - new Date(b.date).getTime()
+        : new Date(b.date).getTime() - new Date(a.date).getTime()
+
+      // If dates are the same, sort by createdAt
+      if (dateDiff === 0) {
+        return sortAsc
+          ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      }
+
+      return dateDiff
+    })
 
     // Date filtering based on selected calendar type
     if (filterYear !== "all") {
@@ -109,6 +123,15 @@ export function AccountsList() {
     }
 
     setFilteredTransactions(filtered)
+
+    setFilteredYearMonths(
+      [...filtered].sort((a, b) => {
+        const dateDiff = new Date(a.date).getTime() - new Date(b.date).getTime()
+        if (dateDiff !== 0) return dateDiff
+
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      })
+    )
   }, [
     transactions,
     filterAccount,
@@ -152,7 +175,7 @@ export function AccountsList() {
   }
 
   const handleExportData = async (format: "csv" | "txt") => {
-    if (!filteredTransactions.length) {
+    if (!filteredYearMonths.length) {
       toast({
         title: "No Data",
         description: "You don't have any transactions to export.",
@@ -194,7 +217,7 @@ export function AccountsList() {
         const csvContent = [
           headers.join(","),
 
-          ...filteredTransactions.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).map((t) => {
+          ...filteredYearMonths.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).map((t) => {
             const isIncome = t.type.toLowerCase() === "income"
             const income = isIncome ? t.amount : ""
             const expense = !isIncome ? t.amount : ""
@@ -221,10 +244,10 @@ export function AccountsList() {
         ].join("\n")
 
         content = csvContent
-        filename = `expense-tracker-${stamp}.csv`
+        filename = `nepali-wallet-${stamp}.csv`
         mimeType = "text/csv"
       } else {
-        const filtered = filteredTransactions.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).map((t) => ({
+        const filtered = filteredYearMonths.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).map((t) => ({
           date: customDateFormat(t.date),
           type: t.type,
           category: getCategoryName(t.category),
@@ -233,7 +256,7 @@ export function AccountsList() {
         }));
 
         content = JSON.stringify(filtered, null, 2)
-        filename = `expense-tracker-${stamp}.txt`
+        filename = `nepali-wallet-${stamp}.txt`
         mimeType = "text/plain"
       }
 
@@ -261,7 +284,7 @@ export function AccountsList() {
       // ✅ ANDROID EXPORT (fix for parent directory error)
       // ---------------------------------------------------------
       if (Capacitor.getPlatform() === "android") {
-        const folder = "ExpenseTracker"
+        const folder = "NepaliWallet"
 
         // Create folder if missing
         await Filesystem.mkdir({
@@ -572,6 +595,7 @@ export function AccountsList() {
                   <th className="border border-gray-300 px-4 py-3 font-semibold min-w-32">Income ({getCurrency()})</th>
                   <th className="border border-gray-300 px-4 py-3 font-semibold min-w-32">Expense ({getCurrency()})</th>
                   <th className="border border-gray-300 px-4 py-3 font-semibold min-w-32">Balance ({getCurrency()})</th>
+                  <th className="border border-gray-300 px-4 py-3 font-semibold max-lg:min-w-100">Description</th>
                 </tr>
               </thead>
 
@@ -624,6 +648,11 @@ export function AccountsList() {
                           {runningBalance >= 0
                             ? `+ ${runningBalance.toLocaleString()}`
                             : `- ${Math.abs(runningBalance).toLocaleString()}`}
+                        </td>
+
+                        {/* Description */}
+                        <td className="border border-gray-300 px-4 py-2">
+                          {t.description}
                         </td>
                       </tr>
                     )

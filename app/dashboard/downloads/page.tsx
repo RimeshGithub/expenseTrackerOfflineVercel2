@@ -27,7 +27,7 @@ export default function DownloadsPage() {
   const [loading, setLoading] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
 
-  const EXPORT_FOLDER = "ExpenseTracker"
+  const EXPORT_FOLDER = "NepaliWallet"
 
   // Ensure folder exists
   const ensureFolderExists = async () => {
@@ -107,7 +107,7 @@ export default function DownloadsPage() {
     if (!isMobile) return
 
     try {
-      // 1. Read original file (from Documents/ExpenseTracker)
+      // 1. Read original file (from Documents/NepaliWallet)
       const readResult = await Filesystem.readFile({
         path: `${EXPORT_FOLDER}/${file.name}`,
         directory: Directory.Documents,
@@ -159,7 +159,7 @@ export default function DownloadsPage() {
     if (!isMobile) return
 
     try {
-      // STEP 1: Read original file from Documents/ExpenseTracker
+      // STEP 1: Read original file from Documents/NepaliWallet
       const readResult = await Filesystem.readFile({
         path: `${EXPORT_FOLDER}/${file.name}`,
         directory: Directory.Documents,

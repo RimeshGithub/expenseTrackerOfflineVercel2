@@ -11,7 +11,7 @@ import { type Transaction, type Category, type Account } from "@/lib/types"
 export function usePDFReport() {
   const [generating, setGenerating] = useState(false)
   const { toast } = useToast()
-  const folder = "ExpenseTracker"
+  const folder = "NepaliWallet"
   const settings = storage.getSettings()
 
   // Month names
