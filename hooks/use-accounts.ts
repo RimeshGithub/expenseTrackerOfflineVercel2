@@ -45,6 +45,8 @@ export function useAccounts() {
       try {
         const success = storage.deleteCustomAccount(id)
         if (success) {
+          localStorage.removeItem("filterAccountAccounts")
+          localStorage.removeItem("filterAccountDashboard")
           loadAccounts()
         }
         return success

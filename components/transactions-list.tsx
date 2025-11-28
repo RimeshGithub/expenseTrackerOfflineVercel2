@@ -359,12 +359,12 @@ export function TransactionsList() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between max-sm:flex-col max-sm:gap-4 max-sm:items-start">
+      <div className="flex items-center justify-between max-sm:flex-col max-sm:gap-2 max-sm:items-start">
         <div>
           <h1 className="text-3xl font-bold">Transactions</h1>
           <p className="text-muted-foreground">Track your income and expenses.</p>
         </div>
-        <Button asChild>
+        <Button asChild className="max-sm:ml-auto">
           <Link href="/dashboard/add">
             <Plus className="mr-2 h-4 w-4" /> Add Transaction
           </Link>

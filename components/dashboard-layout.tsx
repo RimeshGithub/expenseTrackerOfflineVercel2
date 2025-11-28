@@ -15,6 +15,7 @@ import {
   PieChart,
   Cloud,
   CloudOff,
+  ArrowUpDown,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -30,7 +31,8 @@ interface DashboardLayoutProps {
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
   { name: "Add Transaction", href: "/dashboard/add", icon: Plus },
-  { name: "Transactions", href: "/dashboard/transactions", icon: Wallet },
+  { name: "Transactions", href: "/dashboard/transactions", icon: ArrowUpDown },
+  { name: "Accounts", href: "/dashboard/accounts", icon: Wallet },
   { name: "Analytics", href: "/dashboard/analytics", icon: PieChart },
   { name: "Downloads", href: "/dashboard/downloads", icon: Download },
   { name: "Settings", href: "/dashboard/settings", icon: Settings },

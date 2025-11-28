@@ -6,20 +6,31 @@ import { Plus, TrendingUp, TrendingDown, Wallet, Calendar } from "lucide-react"
 import Link from "next/link"
 import { useTransactions } from "@/hooks/use-transactions"
 import { useCategories } from "@/hooks/use-categories"
+import { useAccounts } from "@/hooks/use-accounts"
 import { format } from "date-fns"
 import NepaliDate from "nepali-date-converter"
 import { useState, useEffect } from "react"
 import { getCurrency } from "@/hooks/use-currency"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
 
 export function DashboardOverview() {
 
   const { transactions, loading } = useTransactions()
+  const { accounts } = useAccounts()
 
   const [calendarMode, setCalendarMode] = useState<"ad" | "bs">("ad")
+  const [filterAccount, setFilterAccount] = useState("all")
+  
   useEffect(() => {
     const stored = localStorage.getItem("calendarModeDashboard")
     if (stored !== null) {
       setCalendarMode(stored)
+    }
+
+    const storedFilterAccount = localStorage.getItem("filterAccountDashboard")
+    if (storedFilterAccount !== null) {
+      setFilterAccount(storedFilterAccount)
     }
   }, [])
 
@@ -34,8 +45,9 @@ export function DashboardOverview() {
   const currentBSYear = currentBS.year
   const BSmonths = ["Baisakh", "Jestha", "Asar", "Shrawan", "Bhadra", "Ashwin", "Kartik", "Mangsir", "Poush", "Magh", "Falgun", "Chaitra"]
 
-  // --- FILTER by selected calendar mode ---
-  const filteredTransactions = transactions.filter((t) => {
+  // --- FILTER by selected calendar mode and selected account ---
+  let filteredTransactions = filterAccount === "all" ? transactions : transactions.filter((t) => t.account === filterAccount)
+  filteredTransactions = filteredTransactions.filter((t) => {
     const adDate = new Date(t.date) // assuming AD date is stored in DB
     const bsDate = new NepaliDate(adDate).getBS()
 
@@ -112,7 +124,7 @@ export function DashboardOverview() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between max-md:flex-col max-md:gap-4 max-md:items-start">
+      <div className="flex items-center justify-between max-md:flex-col max-md:gap-4 gap-8 max-md:items-start">
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>
           <p className="text-muted-foreground mr-3">
@@ -121,25 +133,50 @@ export function DashboardOverview() {
               : `Welcome, The following is your Financial overview for ${BSmonths[currentBSMonth]} ${currentBSYear} BS.`}
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant={calendarMode === "ad" ? "default" : "outline"}
-            onClick={() => {setCalendarMode("ad"); localStorage.setItem("calendarModeDashboard", "ad")}}
-          >
-            AD
-          </Button>
-          <Button
-            variant={calendarMode === "bs" ? "default" : "outline"}
-            onClick={() => {setCalendarMode("bs"); localStorage.setItem("calendarModeDashboard", "bs")}}
-          >
-            BS
-          </Button>
-          <Button asChild>
-            <Link href="/dashboard/add">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Transaction
-            </Link>
-          </Button>
+        <div className="flex gap-3 max-sm:flex-col max-sm:ml-auto">
+          <div className={`flex items-center gap-2 max-sm:ml-auto`}>
+            <Label htmlFor="account-filter" className="text-sm font-medium whitespace-nowrap">
+              Account
+            </Label>
+            <Select value={filterAccount} onValueChange={(val) => {setFilterAccount(val); localStorage.setItem("filterAccountDashboard", val)}}>
+              <SelectTrigger id="account-filter" className="w-[170px] bg-background border-border shadow-none">
+                <SelectValue placeholder="Account" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all" className="group"><Wallet className="mr-0 h-4 w-4 group:hover:text-white" /> All Accounts</SelectItem>
+                {accounts.map((acc) => { 
+                  return (
+                    <SelectItem key={acc.id} value={acc.id}>
+                      <div className="flex items-center gap-2">
+                        <span className="w-5 text-center font-bold overflow-hidden">{acc.icon}</span>
+                        <span>{acc.name}</span>
+                      </div>
+                    </SelectItem>
+                  )
+                })}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant={calendarMode === "ad" ? "default" : "outline"}
+              onClick={() => {setCalendarMode("ad"); localStorage.setItem("calendarModeDashboard", "ad")}}
+            >
+              AD
+            </Button>
+            <Button
+              variant={calendarMode === "bs" ? "default" : "outline"}
+              onClick={() => {setCalendarMode("bs"); localStorage.setItem("calendarModeDashboard", "bs")}}
+            >
+              BS
+            </Button>
+            <Button asChild>
+              <Link href="/dashboard/add">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Transaction
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
 
