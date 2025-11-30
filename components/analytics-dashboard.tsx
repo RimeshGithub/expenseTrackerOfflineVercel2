@@ -279,7 +279,7 @@ export function AnalyticsDashboard() {
             <TrendingUp className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{getCurrency()} {totalIncome.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-green-600">{getCurrency()} {totalIncome.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
             <p className="text-xs text-muted-foreground">In selected period</p>
           </CardContent>
         </Card>
@@ -290,7 +290,7 @@ export function AnalyticsDashboard() {
             <TrendingDown className="h-4 w-4 text-red-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">{getCurrency()} {totalExpenses.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-red-600">{getCurrency()} {totalExpenses.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
             <p className="text-xs text-muted-foreground">In selected period</p>
           </CardContent>
         </Card>
@@ -301,7 +301,7 @@ export function AnalyticsDashboard() {
             <Wallet className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-600">{getCurrency()} {balance.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-gray-600">{getCurrency()} {balance.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
             <p className="text-xs text-muted-foreground">In selected period</p>
           </CardContent>
         </Card>
@@ -432,7 +432,7 @@ export function AnalyticsDashboard() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-medium">{getCurrency()} {category.amount}</p>
+                        <p className="font-medium">{getCurrency()} {category.amount.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
                       </div>
                     </div>
                   ))
@@ -465,7 +465,7 @@ export function AnalyticsDashboard() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-medium">{getCurrency()} {category.amount}</p>
+                        <p className="font-medium">{getCurrency()} {category.amount.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
                       </div>
                     </div>
                   ))

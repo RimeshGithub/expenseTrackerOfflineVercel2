@@ -48,6 +48,7 @@ export function useAccounts() {
           localStorage.removeItem("filterAccountAccounts")
           localStorage.removeItem("filterAccountDashboard")
           localStorage.removeItem("filterAccountTransactionsList")
+          localStorage.setItem("carryOverAccount", "cash")
           loadAccounts()
         }
         return success

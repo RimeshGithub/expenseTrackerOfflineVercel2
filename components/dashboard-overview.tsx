@@ -188,7 +188,7 @@ export function DashboardOverview() {
             <TrendingUp className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{getCurrency()} {totalIncome.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-green-600">{getCurrency()} {totalIncome.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
             <p className="text-xs text-muted-foreground">This month</p>
           </CardContent>
         </Card>
@@ -199,7 +199,7 @@ export function DashboardOverview() {
             <TrendingDown className="h-4 w-4 text-red-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">{getCurrency()} {totalExpenses.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-red-600">{getCurrency()} {totalExpenses.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
             <p className="text-xs text-muted-foreground">This month</p>
           </CardContent>
         </Card>
@@ -210,7 +210,7 @@ export function DashboardOverview() {
             <Wallet className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-600">{getCurrency()} {balance.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-gray-600">{getCurrency()} {balance.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
             <p className="text-xs text-muted-foreground">This month</p>
           </CardContent>
         </Card>
@@ -262,7 +262,7 @@ export function DashboardOverview() {
                       <div
                         className={`font-medium whitespace-nowrap ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}
                       >
-                        {transaction.type === "income" ? "+" : "-"} {getCurrency()} {transaction.amount}
+                        {transaction.type === "income" ? "+" : "-"} {getCurrency()} {transaction.amount.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                       </div>
                     </div>
                   )
@@ -291,7 +291,7 @@ export function DashboardOverview() {
                       <div className={`w-3 h-3 rounded-full ${category.color}`} />
                       <span className="font-medium">{category.category}</span>
                     </div>
-                    <span className="font-medium">{getCurrency()} {category.amount}</span>
+                    <span className="font-medium">{getCurrency()} {category.amount.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                   </div>
                 ))
               ) : (

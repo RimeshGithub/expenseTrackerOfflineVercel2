@@ -494,7 +494,7 @@ export function AccountsList() {
                     <div className="w-3 h-3 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 shadow-sm"></div>
                     <span className="font-semibold text-green-700 text-sm">Income</span>
                   </div>
-                  <div className="text-lg font-bold text-green-900">{getCurrency()} {incomeDisp}</div>
+                  <div className="text-md font-bold text-green-900">{getCurrency()} {incomeDisp.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
                 </div>
 
                 {/* Expense */}
@@ -503,7 +503,7 @@ export function AccountsList() {
                     <div className="w-3 h-3 rounded-full bg-gradient-to-r from-red-400 to-pink-500 shadow-sm"></div>
                     <span className="font-semibold text-red-700 text-sm">Expense</span>
                   </div>
-                  <div className="text-lg font-bold text-red-900">{getCurrency()} {expenseDisp}</div>
+                  <div className="text-md font-bold text-red-900">{getCurrency()} {expenseDisp.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
                 </div>
 
                 {/* Balance */}
@@ -512,8 +512,8 @@ export function AccountsList() {
                     <div className="w-3 h-3 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 shadow-sm"></div>
                     <span className="font-semibold text-amber-700 text-sm">Balance</span>
                   </div>
-                  <div className={`text-lg font-bold ${(incomeDisp - expenseDisp) >= 0 ? 'text-amber-900' : 'text-red-900'}`}>
-                    {getCurrency()} {incomeDisp - expenseDisp}
+                  <div className={`text-md font-bold ${(incomeDisp - expenseDisp) >= 0 ? 'text-amber-900' : 'text-red-900'}`}>
+                    {getCurrency()} {(incomeDisp - expenseDisp).toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                   </div>
                 </div>
 
@@ -523,7 +523,7 @@ export function AccountsList() {
                     <div className="w-3 h-3 rounded-full bg-gradient-to-r from-gray-400 to-slate-500 shadow-sm"></div>
                     <span className="font-semibold text-gray-700 text-sm">Transactions</span>
                   </div>
-                  <div className="text-lg font-bold text-gray-900">{filteredTransactions.length}</div>
+                  <div className="text-md font-bold text-gray-900">{filteredTransactions.length}</div>
                 </div>
               </div>
             </div>
@@ -561,8 +561,8 @@ export function AccountsList() {
 
                 {/* Footer stats */}
                 <div className="mt-2 flex justify-between text-xs text-gray-600">
-                  <span>Expense: {getCurrency()} {expenseDisp} ({Math.min(100, (expenseDisp / (incomeDisp + expenseDisp)) * 100).toFixed(1)}%)</span>
-                  <span className="text-right">Income: {getCurrency()} {incomeDisp} ({(100 - Math.min(100, (expenseDisp / (incomeDisp + expenseDisp)) * 100)).toFixed(1)}%)</span>
+                  <span>Expense: {getCurrency()} {expenseDisp.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})} ({Math.min(100, (expenseDisp / (incomeDisp + expenseDisp)) * 100).toFixed(1)}%)</span>
+                  <span className="text-right">Income: {getCurrency()} {incomeDisp.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})} ({(100 - Math.min(100, (expenseDisp / (incomeDisp + expenseDisp)) * 100)).toFixed(1)}%)</span>
                 </div>
               </div>
             )}
@@ -590,12 +590,12 @@ export function AccountsList() {
               {/* ===== TABLE HEADER ===== */}
               <thead className="bg-muted">
                 <tr className="text-left">
-                  <th className="border border-gray-300 px-4 py-3 font-semibold min-w-30">Date ({useBSDate ? "BS" : "AD"})</th>
-                  <th className="border border-gray-300 px-4 py-3 font-semibold min-w-38">Category</th>
-                  <th className="border border-gray-300 px-4 py-3 font-semibold min-w-32">Income ({getCurrency()})</th>
-                  <th className="border border-gray-300 px-4 py-3 font-semibold min-w-32">Expense ({getCurrency()})</th>
-                  <th className="border border-gray-300 px-4 py-3 font-semibold min-w-32">Balance ({getCurrency()})</th>
-                  <th className="border border-gray-300 px-4 py-3 font-semibold max-lg:min-w-100">Description</th>
+                  <th className="border border-gray-300 px-4 py-3 font-semibold min-w-35">Date ({useBSDate ? "BS" : "AD"})</th>
+                  <th className="border border-gray-300 px-4 py-3 font-semibold min-w-40">Category</th>
+                  <th className="border border-gray-300 px-4 py-3 font-semibold min-w-35">Income ({getCurrency()})</th>
+                  <th className="border border-gray-300 px-4 py-3 font-semibold min-w-35">Expense ({getCurrency()})</th>
+                  <th className="border border-gray-300 px-4 py-3 font-semibold min-w-35">Balance ({getCurrency()})</th>
+                  <th className="border border-gray-300 px-4 py-3 font-semibold max-xl:min-w-100">Description</th>
                 </tr>
               </thead>
 
@@ -632,22 +632,22 @@ export function AccountsList() {
                         {/* Income */}
                         <td className="border border-gray-300 px-4 py-2 text-green-600 font-semibold">
                           {income
-                            ? `+ ${t.amount.toLocaleString()}`
+                            ? `+ ${t.amount.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
                             : ""}
                         </td>
 
                         {/* Expense */}
                         <td className="border border-gray-300 px-4 py-2 text-red-600 font-semibold">
                           {expense
-                            ? `- ${t.amount.toLocaleString()}`
+                            ? `- ${t.amount.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
                             : ""}
                         </td>
 
                         {/* Balance */}
                         <td className="border border-gray-300 px-4 py-2 font-semibold">
                           {runningBalance >= 0
-                            ? `+ ${runningBalance.toLocaleString()}`
-                            : `- ${Math.abs(runningBalance).toLocaleString()}`}
+                            ? `+ ${runningBalance.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+                            : `- ${Math.abs(runningBalance).toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`}
                         </td>
 
                         {/* Description */}

@@ -316,9 +316,9 @@ export async function generatePDFReport(data: ReportData) {
   const cardHeight = 32
   
   const metrics = [
-    { label: "Total Income", value: `${data.currency} ${totalIncome.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2})}`, color: COLORS.success },
-    { label: "Total Expenses", value: `${data.currency} ${totalExpenses.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2})}`, color: COLORS.danger },
-    { label: "Net Balance", value: `${balance >= 0 ? '+ ' : '- '}${data.currency} ${Math.abs(balance).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2})}`, color: COLORS.textSecondary }
+    { label: "Total Income", value: `${data.currency} ${totalIncome.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, color: COLORS.success },
+    { label: "Total Expenses", value: `${data.currency} ${totalExpenses.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, color: COLORS.danger },
+    { label: "Net Balance", value: `${balance >= 0 ? '+ ' : '- '}${data.currency} ${Math.abs(balance).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, color: COLORS.textSecondary }
   ]
 
   metrics.forEach((metric, idx) => {
@@ -421,7 +421,7 @@ export async function generatePDFReport(data: ReportData) {
     doc.text("Total Income", summaryX + 7, summaryY + 1)
     doc.setFont("helvetica", "bold")
     doc.setTextColor(COLORS.textPrimary[0], COLORS.textPrimary[1], COLORS.textPrimary[2])
-    doc.text(`${data.currency} ${totalIncome.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2})}`, summaryX + 7, summaryY + 8)
+    doc.text(`${data.currency} ${totalIncome.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, summaryX + 7, summaryY + 8)
     summaryY += 18
 
     // Expenses
@@ -433,7 +433,7 @@ export async function generatePDFReport(data: ReportData) {
     doc.text("Total Expenses", summaryX + 7, summaryY + 1)
     doc.setFont("helvetica", "bold")
     doc.setTextColor(COLORS.textPrimary[0], COLORS.textPrimary[1], COLORS.textPrimary[2])
-    doc.text(`${data.currency} ${totalExpenses.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2})}`, summaryX + 7, summaryY + 8)
+    doc.text(`${data.currency} ${totalExpenses.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, summaryX + 7, summaryY + 8)
     summaryY += 18
 
     // Net balance
@@ -445,7 +445,7 @@ export async function generatePDFReport(data: ReportData) {
     doc.setFontSize(12)
     const balanceColor = balance >= 0 ? COLORS.success : COLORS.danger
     doc.setTextColor(balanceColor[0], balanceColor[1], balanceColor[2])
-    doc.text(`${balance >= 0 ? '+ ' : '- '}${data.currency} ${Math.abs(balance).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2})}`, summaryX, summaryY + 10)
+    doc.text(`${balance >= 0 ? '+ ' : '- '}${data.currency} ${Math.abs(balance).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, summaryX, summaryY + 10)
 
     yPosition += 110
   }
@@ -591,7 +591,7 @@ export async function generatePDFReport(data: ReportData) {
       doc.text(catName, 25, incomeTableY)
       
       doc.setTextColor(COLORS.textPrimary[0], COLORS.textPrimary[1], COLORS.textPrimary[2])
-      doc.text(`${data.currency} ${cat.amount.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2})}`, pageWidth / 2 - 10, incomeTableY)
+      doc.text(`${data.currency} ${cat.amount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, pageWidth / 2 - 10, incomeTableY)
       
       const percentage = totalIncome > 0 ? ((cat.amount / totalIncome) * 100).toFixed(2) : "0"
       doc.setTextColor(COLORS.textPrimary[0], COLORS.textPrimary[1], COLORS.textPrimary[2])
@@ -743,7 +743,7 @@ export async function generatePDFReport(data: ReportData) {
       doc.text(catName, 25, tableY)
       
       doc.setTextColor(COLORS.textPrimary[0], COLORS.textPrimary[1], COLORS.textPrimary[2])
-      doc.text(`${data.currency} ${cat.amount.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2})}`, pageWidth / 2 - 10, tableY)
+      doc.text(`${data.currency} ${cat.amount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, pageWidth / 2 - 10, tableY)
       
       const percentage = totalExpenses > 0 ? ((cat.amount / totalExpenses) * 100).toFixed(2) : "0"
       doc.setTextColor(COLORS.textPrimary[0], COLORS.textPrimary[1], COLORS.textPrimary[2])
@@ -855,24 +855,24 @@ export async function generatePDFReport(data: ReportData) {
       doc.setTextColor(COLORS.textSecondary[0], COLORS.textSecondary[1], COLORS.textSecondary[2])
       doc.text(m, 25, tableY)
       
-      doc.setTextColor(COLORS.textPrimary[0], COLORS.textPrimary[1], COLORS.textPrimary[2])
-      doc.text(`${data.currency} ${monthlyData[m].income.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2})}`, pageWidth / 2 - 35, tableY)
+      if (monthlyData[m].income > 0) {
+        doc.setTextColor(COLORS.success[0], COLORS.success[1], COLORS.success[2])
+      } else {
+        doc.setTextColor(COLORS.textPrimary[0], COLORS.textPrimary[1], COLORS.textPrimary[2])
+      }
+      doc.text(`${data.currency} ${monthlyData[m].income.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, pageWidth / 2 - 35, tableY)
       
-      doc.setTextColor(COLORS.textPrimary[0], COLORS.textPrimary[1], COLORS.textPrimary[2])
-      doc.text(`${data.currency} ${monthlyData[m].expenses.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2})}`, pageWidth - 100, tableY)
+      if (monthlyData[m].expenses > 0) {
+        doc.setTextColor(COLORS.danger[0], COLORS.danger[1], COLORS.danger[2])
+      } else {
+        doc.setTextColor(COLORS.textPrimary[0], COLORS.textPrimary[1], COLORS.textPrimary[2])
+      }
+      doc.text(`${data.currency} ${monthlyData[m].expenses.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, pageWidth - 100, tableY)
       
       doc.setFont("helvetica", "bold")
       const balance = monthlyData[m].income - monthlyData[m].expenses
-      if (balance > 0) {
-        doc.setTextColor(COLORS.success[0], COLORS.success[1], COLORS.success[2])
-      }
-      else if (balance < 0) {
-        doc.setTextColor(COLORS.danger[0], COLORS.danger[1], COLORS.danger[2])
-      }
-      else {
-        doc.setTextColor(COLORS.textSecondary[0], COLORS.textSecondary[1], COLORS.textSecondary[2])
-      }
-      doc.text(`${balance >= 0 ? '+ ' : '- '}${data.currency} ${(Math.abs(balance)).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2})}`, pageWidth - 60, tableY)
+      doc.setTextColor(COLORS.textPrimary[0], COLORS.textPrimary[1], COLORS.textPrimary[2])
+      doc.text(`${balance >= 0 ? '+ ' : '- '}${data.currency} ${(Math.abs(balance)).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, pageWidth - 60, tableY)
 
       doc.setFont("helvetica", "normal")
       tableY += 8
@@ -887,13 +887,13 @@ export async function generatePDFReport(data: ReportData) {
     doc.text("TOTAL", 25, tableY + 1)
 
     doc.setTextColor(COLORS.success[0], COLORS.success[1], COLORS.success[2])
-    doc.text(`${data.currency} ${totalIncome.toLocaleString()}`, pageWidth / 2 - 35, tableY + 1)
+    doc.text(`${data.currency} ${totalIncome.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, pageWidth / 2 - 35, tableY + 1)
 
     doc.setTextColor(COLORS.danger[0], COLORS.danger[1], COLORS.danger[2])
-    doc.text(`${data.currency} ${totalExpenses.toLocaleString()}`, pageWidth - 100, tableY + 1)
+    doc.text(`${data.currency} ${totalExpenses.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, pageWidth - 100, tableY + 1)
 
     doc.setTextColor(COLORS.textPrimary[0], COLORS.textPrimary[1], COLORS.textPrimary[2])
-    doc.text(`${(totalIncome - totalExpenses) >= 0 ? '+ ' : '- '}${data.currency} ${Math.abs(totalIncome - totalExpenses).toLocaleString()}`, pageWidth - 60, tableY + 1, {
+    doc.text(`${(totalIncome - totalExpenses) >= 0 ? '+ ' : '- '}${data.currency} ${Math.abs(totalIncome - totalExpenses).toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, pageWidth - 60, tableY + 1, {
       align: "left",
     })
 
@@ -987,7 +987,7 @@ export async function generatePDFReport(data: ReportData) {
     doc.setFont("helvetica", row.income ? "bold" : "normal")
     doc.setTextColor(COLORS.success[0], COLORS.success[1], COLORS.success[2])
     doc.text(
-      row.income ? `${data.currency} ${row.income.toLocaleString()}` : "-",
+      row.income ? `${data.currency} ${row.income.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : "-",
       85,
       txnY
     )
@@ -996,7 +996,7 @@ export async function generatePDFReport(data: ReportData) {
     doc.setFont("helvetica", row.expense ? "bold" : "normal")
     doc.setTextColor(COLORS.danger[0], COLORS.danger[1], COLORS.danger[2])
     doc.text(
-      row.expense ? `${data.currency} ${row.expense.toLocaleString()}` : "-",
+      row.expense ? `${data.currency} ${row.expense.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : "-",
       120,
       txnY
     )
@@ -1005,7 +1005,7 @@ export async function generatePDFReport(data: ReportData) {
     doc.setFont("helvetica", "bold")
     doc.setTextColor(COLORS.textPrimary[0], COLORS.textPrimary[1], COLORS.textPrimary[2])
     doc.text(
-      `${row.balance >= 0 ? '+ ' : '- '}${data.currency} ${Math.abs(row.balance).toLocaleString()}`,
+      `${row.balance >= 0 ? '+ ' : '- '}${data.currency} ${Math.abs(row.balance).toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
       155,
       txnY,
       { align: "left" }
@@ -1034,13 +1034,13 @@ export async function generatePDFReport(data: ReportData) {
   doc.text("TOTAL", 25, txnY + 1)
 
   doc.setTextColor(COLORS.success[0], COLORS.success[1], COLORS.success[2])
-  doc.text(`${data.currency} ${totalIncome.toLocaleString()}`, 85, txnY + 1)
+  doc.text(`${data.currency} ${totalIncome.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, 85, txnY + 1)
 
   doc.setTextColor(COLORS.danger[0], COLORS.danger[1], COLORS.danger[2])
-  doc.text(`${data.currency} ${totalExpenses.toLocaleString()}`, 120, txnY + 1)
+  doc.text(`${data.currency} ${totalExpenses.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, 120, txnY + 1)
 
   doc.setTextColor(COLORS.textPrimary[0], COLORS.textPrimary[1], COLORS.textPrimary[2])
-  doc.text(`${(totalIncome - totalExpenses) >= 0 ? '+ ' : '- '}${data.currency} ${Math.abs(totalIncome - totalExpenses).toLocaleString()}`, 155, txnY + 1, {
+  doc.text(`${(totalIncome - totalExpenses) >= 0 ? '+ ' : '- '}${data.currency} ${Math.abs(totalIncome - totalExpenses).toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, 155, txnY + 1, {
     align: "left",
   })
   yPosition += pageHeight + 20
@@ -1110,7 +1110,7 @@ export async function generatePDFReport(data: ReportData) {
   txnY += 12
 
   doc.setFont("helvetica", "normal")
-  doc.setFontSize(9)
+  doc.setFontSize(8)
 
   // === Table Rows ===
   transactionRows.forEach((row, idx) => {
@@ -1144,7 +1144,7 @@ export async function generatePDFReport(data: ReportData) {
     doc.setFont("helvetica", row.income ? "bold" : "normal")
     doc.setTextColor(COLORS.success[0], COLORS.success[1], COLORS.success[2])
     doc.text(
-      row.income ? `${data.currency} ${row.income.toLocaleString()}` : "-",
+      row.income ? `${data.currency} ${row.income.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : "-",
       115,
       txnY
     )
@@ -1153,7 +1153,7 @@ export async function generatePDFReport(data: ReportData) {
     doc.setFont("helvetica", row.expense ? "bold" : "normal")
     doc.setTextColor(COLORS.danger[0], COLORS.danger[1], COLORS.danger[2])
     doc.text(
-      row.expense ? `${data.currency} ${row.expense.toLocaleString()}` : "-",
+      row.expense ? `${data.currency} ${row.expense.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : "-",
       140,
       txnY
     )
@@ -1162,7 +1162,7 @@ export async function generatePDFReport(data: ReportData) {
     doc.setFont("helvetica", "bold")
     doc.setTextColor(COLORS.textPrimary[0], COLORS.textPrimary[1], COLORS.textPrimary[2])
     doc.text(
-      `${row.balance >= 0 ? '+ ' : '- '}${data.currency} ${Math.abs(row.balance).toLocaleString()}`,
+      `${row.balance >= 0 ? '+ ' : '- '}${data.currency} ${Math.abs(row.balance).toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
       165,
       txnY,
       { align: "left" }
@@ -1183,7 +1183,7 @@ export async function generatePDFReport(data: ReportData) {
   }
 
   doc.setFont("helvetica", "bold")
-  doc.setFontSize(10)
+  doc.setFontSize(8)
 
   doc.setFillColor(COLORS.bgDark[0], COLORS.bgDark[1], COLORS.bgDark[2])
   doc.rect(20, txnY - 5, pageWidth - 40, 10, "F")
@@ -1191,13 +1191,13 @@ export async function generatePDFReport(data: ReportData) {
   doc.text("TOTAL", 82, txnY + 1)
 
   doc.setTextColor(COLORS.success[0], COLORS.success[1], COLORS.success[2])
-  doc.text(`${data.currency} ${totalIncomeTxn.toLocaleString()}`, 115, txnY + 1)
+  doc.text(`${data.currency} ${totalIncomeTxn.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, 115, txnY + 1)
 
   doc.setTextColor(COLORS.danger[0], COLORS.danger[1], COLORS.danger[2])
-  doc.text(`${data.currency} ${totalExpenseTxn.toLocaleString()}`, 140, txnY + 1)
+  doc.text(`${data.currency} ${totalExpenseTxn.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, 140, txnY + 1)
 
   doc.setTextColor(COLORS.textPrimary[0], COLORS.textPrimary[1], COLORS.textPrimary[2])
-  doc.text(`${(totalIncomeTxn - totalExpenseTxn) >= 0 ? '+ ' : '- '}${data.currency} ${Math.abs(totalIncomeTxn - totalExpenseTxn).toLocaleString()}`, 165, txnY + 1, {
+  doc.text(`${(totalIncomeTxn - totalExpenseTxn) >= 0 ? '+ ' : '- '}${data.currency} ${Math.abs(totalIncomeTxn - totalExpenseTxn).toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, 165, txnY + 1, {
     align: "left",
   })
 

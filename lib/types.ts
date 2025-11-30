@@ -50,6 +50,7 @@ export const INCOME_CATEGORIES: Category[] = [
   { id: "rent-income", name: "Rent Income", icon: "🏠", color: "bg-blue-400", type: "income" },
   { id: "investment", name: "Investment", icon: "📈", color: "bg-teal-500", type: "income" },
   { id: "credit-transfer", name: "Credit Transfer", icon: "💸", color: "bg-green-400", type: "income" },
+  { id: "carry-over", name: "Carry Over", icon: "🔁", color: "bg-orange-500", type: "income" },
   { id: "other-income", name: "Other Income", icon: "💰", color: "bg-yellow-500", type: "income" },
 ]
 

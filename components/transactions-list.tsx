@@ -608,7 +608,7 @@ export function TransactionsList() {
                         <div className="w-3 h-3 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 shadow-sm"></div>
                         <span className="font-semibold text-green-700 text-sm">Income</span>
                       </div>
-                      <div className="text-lg font-bold text-green-900">{getCurrency()} {incomeDisp}</div>
+                      <div className="text-md font-bold text-green-900">{getCurrency()} {incomeDisp.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
                     </div>
                   )}
 
@@ -619,7 +619,7 @@ export function TransactionsList() {
                         <div className="w-3 h-3 rounded-full bg-gradient-to-r from-red-400 to-pink-500 shadow-sm"></div>
                         <span className="font-semibold text-red-700 text-sm">Expense</span>
                       </div>
-                      <div className="text-lg font-bold text-red-900">{getCurrency()} {expenseDisp}</div>
+                      <div className="text-md font-bold text-red-900">{getCurrency()} {expenseDisp.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
                     </div>
                   )}
 
@@ -630,8 +630,8 @@ export function TransactionsList() {
                         <div className="w-3 h-3 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 shadow-sm"></div>
                         <span className="font-semibold text-amber-700 text-sm">Balance</span>
                       </div>
-                      <div className={`text-lg font-bold ${(incomeDisp - expenseDisp) >= 0 ? 'text-amber-900' : 'text-red-900'}`}>
-                        {getCurrency()} {incomeDisp - expenseDisp}
+                      <div className={`text-md font-bold ${(incomeDisp - expenseDisp) >= 0 ? 'text-amber-900' : 'text-red-900'}`}>
+                        {getCurrency()} {(incomeDisp - expenseDisp).toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                       </div>
                     </div>
                   )}
@@ -642,7 +642,7 @@ export function TransactionsList() {
                       <div className="w-3 h-3 rounded-full bg-gradient-to-r from-gray-400 to-slate-500 shadow-sm"></div>
                       <span className="font-semibold text-gray-700 text-sm">Transactions</span>
                     </div>
-                    <div className="text-lg font-bold text-gray-900">{filteredTransactions.length}</div>
+                    <div className="text-md font-bold text-gray-900">{filteredTransactions.length}</div>
                   </div>
                 </div>
               </div>
@@ -680,8 +680,8 @@ export function TransactionsList() {
 
                   {/* Footer stats */}
                   <div className="mt-2 flex justify-between text-xs text-gray-600">
-                    <span>Expense: {getCurrency()} {expenseDisp} ({Math.min(100, (expenseDisp / (incomeDisp + expenseDisp)) * 100).toFixed(1)}%)</span>
-                    <span className="text-right">Income: {getCurrency()} {incomeDisp} ({(100 - Math.min(100, (expenseDisp / (incomeDisp + expenseDisp)) * 100)).toFixed(1)}%)</span>
+                    <span>Expense: {getCurrency()} {expenseDisp.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})} ({Math.min(100, (expenseDisp / (incomeDisp + expenseDisp)) * 100).toFixed(1)}%)</span>
+                    <span className="text-right">Income: {getCurrency()} {incomeDisp.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})} ({(100 - Math.min(100, (expenseDisp / (incomeDisp + expenseDisp)) * 100)).toFixed(1)}%)</span>
                   </div>
                 </div>
               )}
@@ -730,7 +730,7 @@ export function TransactionsList() {
                   </div>
                   <div className="flex items-center gap-2">
                     <div className={`font-bold ${t.type === "income" ? "text-green-600" : "text-red-600"}`}>
-                      {t.type === "income" ? "+ " : "- "}{getCurrency()} {t.amount}
+                      {t.type === "income" ? "+ " : "- "}{getCurrency()} {t.amount.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
