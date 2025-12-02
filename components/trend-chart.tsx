@@ -32,7 +32,7 @@ export function TrendChart({ data, type }: TrendChartProps) {
   })
 
   return (
-    <ChartContainer config={chartConfig} className="h-[400px] w-3xl pr-10">
+    <ChartContainer config={chartConfig} className="h-[400px] w-full min-w-3xl pr-10">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
           <XAxis dataKey="month" fontSize={10} />

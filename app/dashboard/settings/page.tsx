@@ -399,7 +399,7 @@ export default function SettingsPage() {
     if (success) {
       toast({
         title: "Sync Successful",
-        description: "Your data has been synced to Firebase.",
+        description: "Your data has been synced to the Cloud.",
       })
     } else {
       toast({
@@ -773,7 +773,7 @@ export default function SettingsPage() {
                   <Cloud className="h-5 w-5" />
                   Cloud Sync
                 </CardTitle>
-                <CardDescription>Backup and restore your data with Firebase</CardDescription>
+                <CardDescription>Backup your data to the Cloud</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {!user ? (
@@ -904,7 +904,7 @@ export default function SettingsPage() {
 
           {isMobile && <Card>
             <CardHeader className="flex flex-row sm:items-center sm:justify-between max-sm:flex-col gap-3">
-              <div>
+              <div className="flex flex-col gap-1.5">
                 <CardTitle className="flex items-center gap-2">
                 <DatabaseBackup className="h-5 w-5" />
                   Local Backup
@@ -1273,7 +1273,7 @@ export default function SettingsPage() {
               <div>
                 <Label className="text-sm font-bold">Storage</Label>
                 <p className="text-sm text-muted-foreground">
-                  Data is stored locally in your device with optional cloud backup
+                  Your data is stored locally on your device, with optional cloud backup via Firebase
                 </p>
               </div>
               <div>

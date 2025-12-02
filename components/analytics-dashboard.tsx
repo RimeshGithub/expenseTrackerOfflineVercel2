@@ -326,14 +326,18 @@ export function AnalyticsDashboard() {
           <TabsTrigger value="trends">Trends</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-4 max-md:pr-220">
-          <div className="grid gap-4 md:grid-cols-1">
-            <Card className="flex items-center">
-              <CardHeader className="w-full">
+        <TabsContent value="overview" className="space-y-4 w-full max-w-full overflow-x-hidden">
+          <div className="grid gap-4 w-full grid-cols-1">
+
+            <Card className="w-full overflow-x-auto p-6">
+              <CardHeader className="w-full px-0">
                 <CardTitle>Income vs Expenses</CardTitle>
-                <CardDescription>Visual comparison of your income and expenses proportionally</CardDescription>
+                <CardDescription>
+                  Visual comparison of your income and expenses proportionally
+                </CardDescription>
               </CardHeader>
-              <CardContent>
+
+              <CardContent className="w-full overflow-x-auto px-0">
                 {categoryBreakdown.length > 0 ? (
                   <CategoryChart data={categoryBreakdown} category="all" />
                 ) : (
@@ -344,26 +348,38 @@ export function AnalyticsDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="flex items-center">
-              <CardHeader className="w-full">
+            <Card className="w-full overflow-x-auto p-6">
+              <CardHeader className="w-full px-0">
                 <CardTitle>Income vs Expenses</CardTitle>
-                <CardDescription>Monthly comparison of your income and expenses</CardDescription>
+                <CardDescription>
+                  Monthly comparison of your income and expenses
+                </CardDescription>
               </CardHeader>
-              <CardContent>
+
+              <CardContent className="w-full overflow-x-auto px-0">
                 <IncomeVsExpenseChart type={calendarType} data={monthlyTrend} />
               </CardContent>
             </Card>
 
-            <Card className="flex items-center">
-              <CardHeader className="w-full">
+            <Card className="w-full overflow-x-auto p-6">
+              <CardHeader className="w-full px-0">
                 <CardTitle>Category Distribution</CardTitle>
-                <CardDescription>Visual breakdown of transaction amounts by category</CardDescription>
+                <CardDescription>
+                  Visual breakdown of transaction amounts by category
+                </CardDescription>
               </CardHeader>
-              <CardContent>
+
+              <CardContent className="w-full overflow-x-auto px-0">
                 {categoryBreakdown.length > 0 ? (
-                  <div className="flex flex-col gap-10">
-                    <ExpenseIncomeChart data={expenseCategoryBreakdown} category="Expenses" />
-                    <ExpenseIncomeChart data={incomeCategoryBreakdown} category="Income" />
+                  <div className="flex flex-col gap-10 w-full">
+                    <ExpenseIncomeChart
+                      data={expenseCategoryBreakdown}
+                      category="Expenses"
+                    />
+                    <ExpenseIncomeChart
+                      data={incomeCategoryBreakdown}
+                      category="Income"
+                    />
                   </div>
                 ) : (
                   <div className="h-[300px] flex items-center justify-center text-muted-foreground">
@@ -372,17 +388,20 @@ export function AnalyticsDashboard() {
                 )}
               </CardContent>
             </Card>
+
           </div>
         </TabsContent>
 
-        <TabsContent value="categories" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-1 max-md:pr-220">
-            <Card className="flex items-center">
-              <CardHeader className="w-full">
+        <TabsContent value="categories" className="space-y-4 w-full overflow-x-hidden">
+          <div className="grid gap-4 grid-cols-1 w-full">
+            
+            {/* Expense Categories */}
+            <Card className="w-full overflow-x-auto p-6">
+              <CardHeader className="w-full px-0">
                 <CardTitle>Expense Categories</CardTitle>
                 <CardDescription>Breakdown of your spending by category</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="w-full overflow-x-auto px-0">
                 {categoryBreakdown.length > 0 ? (
                   <CategoryChart data={expenseCategoryBreakdown} category="expenses" />
                 ) : (
@@ -393,12 +412,13 @@ export function AnalyticsDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="flex items-center">
-              <CardHeader className="w-full">
+            {/* Income Categories */}
+            <Card className="w-full overflow-x-auto p-6">
+              <CardHeader className="w-full px-0">
                 <CardTitle>Income Categories</CardTitle>
                 <CardDescription>Breakdown of your earnings by category</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="w-full overflow-x-auto px-0">
                 {categoryBreakdown.length > 0 ? (
                   <CategoryChart data={incomeCategoryBreakdown} category="incomes" />
                 ) : (
@@ -408,18 +428,20 @@ export function AnalyticsDashboard() {
                 )}
               </CardContent>
             </Card>
+
           </div>
 
-          <Card>
-            <CardHeader>
+          {/* Top Expense Categories */}
+          <Card className="p-6">
+            <CardHeader className="px-0">
               <CardTitle>Top Expense Categories</CardTitle>
               <CardDescription>Your highest expense categories this period</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-0">
               <div className="space-y-4">
                 {topCategoriesExpense.length > 0 ? (
                   topCategoriesExpense.map((category, index) => (
-                    <div key={category.category} className="flex items-center justify-between">
+                    <div key={category.category} className="flex items-center justify-between gap-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-medium">
                           {index + 1}
@@ -431,28 +453,37 @@ export function AnalyticsDashboard() {
                           </p>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-medium">{getCurrency()} {category.amount.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                      <div className="text-right whitespace-nowrap">
+                        <p className="font-medium">
+                          {getCurrency()}{" "}
+                          {category.amount.toLocaleString("en-IN", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </p>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <div className="text-center py-8 text-muted-foreground">No expense categories available</div>
+                  <div className="text-center py-8 text-muted-foreground">
+                    No expense categories available
+                  </div>
                 )}
               </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
+          {/* Top Income Categories */}
+          <Card className="p-6">
+            <CardHeader className="px-0">
               <CardTitle>Top Income Categories</CardTitle>
               <CardDescription>Your highest income categories this period</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-0">
               <div className="space-y-4">
                 {topCategoriesIncome.length > 0 ? (
                   topCategoriesIncome.map((category, index) => (
-                    <div key={category.category} className="flex items-center justify-between">
+                    <div key={category.category} className="flex items-center justify-between gap-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-medium">
                           {index + 1}
@@ -464,28 +495,45 @@ export function AnalyticsDashboard() {
                           </p>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-medium">{getCurrency()} {category.amount.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                      <div className="text-right whitespace-nowrap">
+                        <p className="font-medium">
+                          {getCurrency()}{" "}
+                          {category.amount.toLocaleString("en-IN", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </p>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <div className="text-center py-8 text-muted-foreground">No income categories available</div>
+                  <div className="text-center py-8 text-muted-foreground">
+                    No income categories available
+                  </div>
                 )}
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="trends" className="space-y-4 max-md:pr-220 mb-5">
-          <div className="grid gap-4 md:grid-cols-1">
-            <Card className="flex items-center">
-              <CardHeader className="w-full">
+        <TabsContent
+          value="trends"
+          className="space-y-4 w-full overflow-x-hidden mb-4"
+        >
+          <div className="grid gap-4 grid-cols-1 w-full">
+            <Card className="flex flex-col w-full overflow-hidden p-6">
+              <CardHeader className="w-full px-0">
                 <CardTitle>Financial Trends</CardTitle>
-                <CardDescription>Track your financial patterns over time</CardDescription>
+                <CardDescription>
+                  Track your financial patterns over time
+                </CardDescription>
               </CardHeader>
-              <CardContent>
-                <TrendChart type={calendarType} data={monthlyTrend} />
+
+              {/* Allow chart/content to scroll if wider than screen */}
+              <CardContent className="w-full overflow-x-auto px-0">
+                <div className="min-w-[320px]">
+                  <TrendChart type={calendarType} data={monthlyTrend} />
+                </div>
               </CardContent>
             </Card>
           </div>

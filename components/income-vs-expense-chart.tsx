@@ -32,7 +32,7 @@ export function IncomeVsExpenseChart({ data, type }: IncomeVsExpenseChartProps) 
   })
 
   return (
-    <ChartContainer config={chartConfig} className="h-[300px] w-3xl">
+    <ChartContainer config={chartConfig} className="h-[300px] w-full min-w-3xl pr-5">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
           <XAxis dataKey="month" fontSize={10}/>

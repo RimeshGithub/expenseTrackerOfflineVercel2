@@ -106,7 +106,7 @@ export const useFirebaseSync = (userId: string | null) => {
   // Restore data from Firebase
   const restoreData = useCallback(async () => {
     if (!userId || !isFirebaseInitialized()) {
-      setSyncError("Cannot restore: Firebase not initialized or user not logged in")
+      setSyncError("Cannot restore: Cloud not initialized or user not logged in")
       return false
     }
 
@@ -120,7 +120,7 @@ export const useFirebaseSync = (userId: string | null) => {
         storage.saveData(restoredData)
         return true
       } else {
-        setSyncError("No data found in Firebase to restore")
+        setSyncError("No data found in Cloud to restore")
         return false
       }
     } catch (error) {
