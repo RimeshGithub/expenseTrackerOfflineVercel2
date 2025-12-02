@@ -10,17 +10,23 @@ import { Label } from "@/components/ui/label"
 import { type Transaction } from "@/lib/types"
 import { useCategories } from "@/hooks/use-categories"
 import { useAccounts } from "@/hooks/use-accounts"
-import { Plus, Trash2, Download, SortAsc, SortDesc, TrendingUp } from "lucide-react"
+import { Plus, Trash2, Download, SortAsc, SortDesc, TrendingUp, Sheet, List, MoreHorizontal, Edit } from "lucide-react"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import NepaliDate from "nepali-date-converter"
 import { getCurrency } from "@/hooks/use-currency"
 import { useToast } from "@/hooks/use-toast"
 import { ACCOUNTS } from "@/lib/types"
 import { Capacitor } from "@capacitor/core"
+import { format, set } from "date-fns"
+import { EditTransactionForm } from "@/components/edit-transaction-form"
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem"
+import { useEditFormStore } from "@/hooks/use-editform-store"
 
 export function AccountsList() {
-  const { transactions: trans } = useTransactions()
+  const { transactions: trans, deleteTransaction } = useTransactions()
   const [transactions, setTransactions] = useState<Transaction[]>([])
 
   useEffect(() => {
@@ -56,12 +62,21 @@ export function AccountsList() {
     if (storedFilterAccount !== null) {
       setFilterAccount(storedFilterAccount)
     }
+
+    const storedViewModeList = localStorage.getItem("viewModeListAccounts")
+    if (storedViewModeList !== null) {
+      setViewModeList(JSON.parse(storedViewModeList))
+    }
   }, [])
 
   const [filterYear, setFilterYear] = useState(todayADYear.toString())
   const [filterMonth, setFilterMonth] = useState(todayADMonth.toString())
   const [filteredYearMonths, setFilteredYearMonths] = useState<Transaction[]>([])
+
+  const { isFormOpen, openForm, closeForm } = useEditFormStore()
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
   const [sortAsc, setSortAsc] = useState(false)
+  const [viewModeList, setViewModeList] = useState(true)
 
   // Month names
   const adMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
@@ -152,6 +167,12 @@ export function AccountsList() {
     }
   }, [useBSDate])
 
+  useEffect(() => {
+    if (!isFormOpen) {
+      setEditingTransaction(null)
+    }
+  }, [isFormOpen])
+
   const handleDeleteAccount = (accId: string, accName: string) => {
     const confirm = window.confirm(`Are you sure you want to delete "${accName}" account and its associated transactions?`)
     if (!confirm) return
@@ -171,6 +192,14 @@ export function AccountsList() {
         description: "Failed to delete account. Please try again.",
         variant: "destructive",
       })
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteTransaction(id)
+    } catch (e) {
+      console.error("Delete failed:", e)
     }
   }
 
@@ -328,6 +357,11 @@ export function AccountsList() {
       return `${nepaliDate.getYear()}-${(nepaliDate.getMonth() + 1).toString().padStart(2,"0")}-${nepaliDate.getDate().toString().padStart(2,"0")}`
     }
     return `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2,"0")}-${d.getDate().toString().padStart(2,"0")}`
+  }
+
+  const getCategoryInfo = (categoryId: string, type: "expense" | "income") => {
+    const categories = type === "expense" ? expenseCategories : incomeCategories
+    return categories.find((c) => c.id === categoryId) || { name: categoryId, icon: "📦", color: "bg-gray-500" }
   }
 
   const getCategoryName = (catId: string) => {
@@ -572,97 +606,161 @@ export function AccountsList() {
 
       {/* Transactions */}
       <div className={`flex items-center gap-4 px-3`}>
-        <h1 className="text-2xl font-bold">Transactions List</h1>
-        <Button variant="outline" onClick={() => setSortAsc(!sortAsc)}>
-          {sortAsc ? <SortDesc className="h-4 w-4" /> : <SortAsc className="h-4 w-4" />}
-        </Button>
+        <h1 className="text-2xl font-bold">Transactions</h1>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setSortAsc(!sortAsc)}>
+            {sortAsc ? <SortDesc className="h-4 w-4" /> : <SortAsc className="h-4 w-4" />}
+          </Button>
+          <Button variant="outline" onClick={() => {localStorage.setItem("viewModeListAccounts", String(!viewModeList)); setViewModeList(!viewModeList)}}>
+            {viewModeList ? <Sheet className="h-4 w-4" /> : <List className="h-4 w-4" />}
+          </Button>
+        </div>
       </div>
       <div className="space-y-4">
         {filteredTransactions.length === 0 ? (
-          <Card>
-            <CardContent className="p-12 text-center">
-              No transactions found
-            </CardContent>
-          </Card>
+          <Card><CardContent className="p-12 text-center">No transactions found</CardContent></Card>
         ) : (
-          <div className="overflow-x-auto mb-20">
-            <table className="w-full text-sm border-collapse">
-              {/* ===== TABLE HEADER ===== */}
-              <thead className="bg-muted">
-                <tr className="text-left">
-                  <th className="border border-gray-300 px-4 py-3 font-semibold min-w-35">Date ({useBSDate ? "BS" : "AD"})</th>
-                  <th className="border border-gray-300 px-4 py-3 font-semibold min-w-40">Category</th>
-                  <th className="border border-gray-300 px-4 py-3 font-semibold min-w-35">Income ({getCurrency()})</th>
-                  <th className="border border-gray-300 px-4 py-3 font-semibold min-w-35">Expense ({getCurrency()})</th>
-                  <th className="border border-gray-300 px-4 py-3 font-semibold min-w-35">Balance ({getCurrency()})</th>
-                  <th className="border border-gray-300 px-4 py-3 font-semibold max-xl:min-w-100">Description</th>
-                </tr>
-              </thead>
+          viewModeList ?
+          (
+            filteredTransactions.map((t) => {
+              const cat = getCategoryInfo(t.category, t.type)
+              const bs = new NepaliDate(new Date(t.date)).getBS()
+              return (
+                <Card key={t.id}>
+                  <CardContent className="p-6 py-0 flex justify-between items-center max-sm:flex-col max-sm:gap-3.5">
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center gap-4">
+                        <div className={`w-12 h-12 rounded-full ${cat.color} flex items-center justify-center text-black font-bold text-2xl`}>
+                          {cat.icon}
+                        </div>
+                        <div>
+                          <Badge variant={t.type === "income" ? "default" : "destructive"}>{cat.name}</Badge>
+                          <div className="text-xs mt-1 text-muted-foreground">
+                            {format(new Date(t.date), "MMM dd, yyyy")} AD | {bsMonths[bs.month]} {bs.date}, {bs.year} BS
+                          </div>
+                        </div>
+                      </div>
+                      {t.description && <p className="text-sm mt-2 px-3">{t.description}</p>}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className={`font-bold ${t.type === "income" ? "text-green-600" : "text-red-600"}`}>
+                        {t.type === "income" ? "+ " : "- "}{getCurrency()} {t.amount.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm"><MoreHorizontal className="h-4 w-4" /></Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => {setEditingTransaction(t); openForm()}}>
+                            <Edit className="mr-2 h-4 w-4 hover:text-white" /> Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleDelete(t.id)} className="text-red-600">
+                            <Trash2 className="mr-2 h-4 w-4 hover:text-white" /> Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })
+          ) : (
+            <div className="overflow-x-auto mb-20">
+              <table className="w-full text-sm border-collapse">
+                {/* ===== TABLE HEADER ===== */}
+                <thead className="bg-muted">
+                  <tr className="text-left">
+                    <th className="border border-gray-300 px-4 py-3 font-semibold min-w-40">Date ({useBSDate ? "BS" : "AD"})</th>
+                    <th className="border border-gray-300 px-4 py-3 font-semibold min-w-40">Category</th>
+                    <th className="border border-gray-300 px-4 py-3 font-semibold min-w-40">Income ({getCurrency()})</th>
+                    <th className="border border-gray-300 px-4 py-3 font-semibold min-w-40">Expense ({getCurrency()})</th>
+                    <th className="border border-gray-300 px-4 py-3 font-semibold min-w-40">Balance ({getCurrency()})</th>
+                    <th className="border border-gray-300 px-4 py-3 font-semibold max-xl:min-w-100">Description</th>
+                  </tr>
+                </thead>
+  
+                {/* ===== TABLE BODY ===== */}
+                <tbody>
+                  {(() => {
+                    let runningBalance = 0
+  
+                    return filteredTransactions.map((t, idx) => {
+                      const isIncome = t.type === "income"
+                      const income = isIncome ? t.amount : ""
+                      const expense = !isIncome ? t.amount : ""
+  
+                      // update running balance
+                      runningBalance += isIncome ? t.amount : -t.amount
+  
+                      const bsDate = new NepaliDate(new Date(t.date)).getBS()
+  
+                      return (
+                        <tr
+                          key={t.id}
+                          className={idx % 2 === 0 ? "bg-background" : "bg-muted/40"}
+                        >
+                          {/* Date */}
+                          <td className="border border-gray-300 px-4 py-2">
+                            {customDateFormat(t.date)}
+                          </td>
 
-              {/* ===== TABLE BODY ===== */}
-              <tbody>
-                {(() => {
-                  let runningBalance = 0
-
-                  return filteredTransactions.map((t, idx) => {
-                    const isIncome = t.type === "income"
-                    const income = isIncome ? t.amount : ""
-                    const expense = !isIncome ? t.amount : ""
-
-                    // update running balance
-                    runningBalance += isIncome ? t.amount : -t.amount
-
-                    const bsDate = new NepaliDate(new Date(t.date)).getBS()
-
-                    return (
-                      <tr
-                        key={t.id}
-                        className={idx % 2 === 0 ? "bg-background" : "bg-muted/40"}
-                      >
-                        {/* Date */}
-                        <td className="border border-gray-300 px-4 py-2">
-                          {customDateFormat(t.date)}
-                        </td>
-
-                        {/* Category */}
-                        <td className="border border-gray-300 px-4 py-2">
-                          {getCategoryName(t.category)}
-                        </td>
-
-                        {/* Income */}
-                        <td className="border border-gray-300 px-4 py-2 text-green-600 font-semibold">
-                          {income
-                            ? `+ ${t.amount.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
-                            : ""}
-                        </td>
-
-                        {/* Expense */}
-                        <td className="border border-gray-300 px-4 py-2 text-red-600 font-semibold">
-                          {expense
-                            ? `- ${t.amount.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
-                            : ""}
-                        </td>
-
-                        {/* Balance */}
-                        <td className="border border-gray-300 px-4 py-2 font-semibold">
-                          {runningBalance >= 0
-                            ? `+ ${runningBalance.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
-                            : `- ${Math.abs(runningBalance).toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`}
-                        </td>
-
-                        {/* Description */}
-                        <td className="border border-gray-300 px-4 py-2">
-                          {t.description}
-                        </td>
-                      </tr>
-                    )
-                  })
-                })()}
-              </tbody>
-            </table>
-          </div>
+                          {/* Category */}
+                          <td className="border border-gray-300 px-4 py-2">
+                            {getCategoryName(t.category)}
+                          </td>
+  
+                          {/* Income */}
+                          <td className="border border-gray-300 px-4 py-2 text-green-600 font-semibold">
+                            {income
+                              ? `+ ${t.amount.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+                              : ""}
+                          </td>
+  
+                          {/* Expense */}
+                          <td className="border border-gray-300 px-4 py-2 text-red-600 font-semibold">
+                            {expense
+                              ? `- ${t.amount.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+                              : ""}
+                          </td>
+  
+                          {/* Balance */}
+                          <td className="border border-gray-300 px-4 py-2 font-semibold">
+                            {runningBalance >= 0
+                              ? `+ ${runningBalance.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+                              : `- ${Math.abs(runningBalance).toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`}
+                          </td>
+  
+                          {/* Description */}
+                          <td className="border border-gray-300 px-4 py-2">
+                            {t.description}
+                          </td>
+                        </tr>
+                      )
+                    })
+                  })()}
+                </tbody>
+              </table>
+            </div>
+          )
         )}
       </div>
+
+      {/* Edit Dialog */}
+      <Dialog open={!!editingTransaction} onOpenChange={() => {setEditingTransaction(null); closeForm()}}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Transaction</DialogTitle>
+            <DialogDescription>Update your transaction details</DialogDescription>
+          </DialogHeader>
+          {editingTransaction && (
+            <EditTransactionForm
+              transaction={editingTransaction}
+              onComplete={(transaction) => {setTransactions((prev) => prev.map((t) => t.id === transaction.id ? transaction : t)); setEditingTransaction(null)}}
+              onCancel={() => setEditingTransaction(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -14,10 +14,10 @@ import { Label } from "@/components/ui/label"
 import { type Transaction } from "@/lib/types"
 import { useCategories } from "@/hooks/use-categories"
 import { useAccounts } from "@/hooks/use-accounts"
-import { Plus, Search, MoreHorizontal, Edit, Trash2, Download, SortAsc, SortDesc, Tags, Wallet, ArrowUpDown, TrendingUp, TrendingDown } from "lucide-react"
+import { Plus, Search, MoreHorizontal, Edit, Trash2, Download, SortAsc, SortDesc, Tags, Wallet, ArrowUpDown, TrendingUp, TrendingDown, Sheet, List } from "lucide-react"
 import Link from "next/link"
 import { format, set } from "date-fns"
-import { EditTransactionForm } from "./edit-transaction-form"
+import { EditTransactionForm } from "@/components/edit-transaction-form"
 import NepaliDate from "nepali-date-converter"
 import { getCurrency } from "@/hooks/use-currency"
 import { useToast } from "@/hooks/use-toast"
@@ -72,6 +72,11 @@ export function TransactionsList() {
     if (storedFilterAccount !== null) {
       setFilterAccount(storedFilterAccount)
     }
+
+    const storedViewModeList = localStorage.getItem("viewModeListTransactionsList")
+    if (storedViewModeList !== null) {
+      setViewModeList(JSON.parse(storedViewModeList))
+    }
   }, [])
 
   const [filterYear, setFilterYear] = useState(todayADYear.toString())
@@ -80,6 +85,7 @@ export function TransactionsList() {
   const { isFormOpen, openForm, closeForm } = useEditFormStore()
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
   const [sortAsc, setSortAsc] = useState(false)
+  const [viewModeList, setViewModeList] = useState(true)
 
   // Month names
   const adMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
@@ -692,64 +698,155 @@ export function TransactionsList() {
 
       {/* Transactions */}
       <div className={`flex items-center gap-4 px-3 ${searchTerm ? "max-md:hidden" : ""}`}>
-        <h1 className="text-2xl font-bold">Transactions List</h1>
-        <Button variant="outline" onClick={() => setSortAsc(!sortAsc)}>
-          {sortAsc ? <SortDesc className="h-4 w-4" /> : <SortAsc className="h-4 w-4" />}
-        </Button>
+        <h1 className="text-2xl font-bold">Transactions</h1>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setSortAsc(!sortAsc)}>
+            {sortAsc ? <SortDesc className="h-4 w-4" /> : <SortAsc className="h-4 w-4" />}
+          </Button>
+          <Button variant="outline" onClick={() => {localStorage.setItem("viewModeListTransactionsList", String(!viewModeList)); setViewModeList(!viewModeList)}}>
+            {viewModeList ? <Sheet className="h-4 w-4" /> : <List className="h-4 w-4" />}
+          </Button>
+        </div>
       </div>
       <div className="space-y-4">
         {filteredTransactions.length === 0 ? (
           <Card><CardContent className="p-12 text-center">No transactions found</CardContent></Card>
         ) : (
-          filteredTransactions.map((t) => {
-            const cat = getCategoryInfo(t.category, t.type)
-            const acc = getAccountInfo(t.account)
-            const bs = new NepaliDate(new Date(t.date)).getBS()
-            return (
-              <Card key={t.id}>
-                <CardContent className="p-6 py-0 flex justify-between items-center max-sm:flex-col max-sm:gap-3.5">
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-12 h-12 rounded-full ${cat.color} flex items-center justify-center text-black font-bold text-2xl`}>
-                        {cat.icon}
-                      </div>
-                      <div>
-                        <div className="flex gap-2">
-                          <Badge variant={t.type === "income" ? "default" : "destructive"}>{cat.name}</Badge>
-                          <Badge variant="outline" className="max-sm:max-w-[140px] flex items-center gap-1">
-                            <span className="font-bold shrink-0">{acc.icon}</span>
-                            <span className="truncate">{acc.name}</span>
-                          </Badge>
+          viewModeList ?
+          (
+            filteredTransactions.map((t) => {
+              const cat = getCategoryInfo(t.category, t.type)
+              const acc = getAccountInfo(t.account)
+              const bs = new NepaliDate(new Date(t.date)).getBS()
+              return (
+                <Card key={t.id}>
+                  <CardContent className="p-6 py-0 flex justify-between items-center max-sm:flex-col max-sm:gap-3.5">
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center gap-4">
+                        <div className={`w-12 h-12 rounded-full ${cat.color} flex items-center justify-center text-black font-bold text-2xl`}>
+                          {cat.icon}
                         </div>
-                        <div className="text-xs mt-1 text-muted-foreground">
-                          {format(new Date(t.date), "MMM dd, yyyy")} AD | {bsMonths[bs.month]} {bs.date}, {bs.year} BS
+                        <div>
+                          <div className="flex gap-2">
+                            <Badge variant={t.type === "income" ? "default" : "destructive"}>{cat.name}</Badge>
+                            <Badge variant="outline" className="max-sm:max-w-[140px] flex items-center gap-1">
+                              <span className="font-bold shrink-0">{acc.icon}</span>
+                              <span className="truncate">{acc.name}</span>
+                            </Badge>
+                          </div>
+                          <div className="text-xs mt-1 text-muted-foreground">
+                            {format(new Date(t.date), "MMM dd, yyyy")} AD | {bsMonths[bs.month]} {bs.date}, {bs.year} BS
+                          </div>
                         </div>
                       </div>
+                      {t.description && <p className="text-sm mt-2 px-3">{t.description}</p>}
                     </div>
-                    {t.description && <p className="text-sm mt-2 px-3">{t.description}</p>}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className={`font-bold ${t.type === "income" ? "text-green-600" : "text-red-600"}`}>
-                      {t.type === "income" ? "+ " : "- "}{getCurrency()} {t.amount.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                    <div className="flex items-center gap-2">
+                      <div className={`font-bold ${t.type === "income" ? "text-green-600" : "text-red-600"}`}>
+                        {t.type === "income" ? "+ " : "- "}{getCurrency()} {t.amount.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm"><MoreHorizontal className="h-4 w-4" /></Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => {setEditingTransaction(t); openForm()}}>
+                            <Edit className="mr-2 h-4 w-4 hover:text-white" /> Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleDelete(t.id)} className="text-red-600">
+                            <Trash2 className="mr-2 h-4 w-4 hover:text-white" /> Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm"><MoreHorizontal className="h-4 w-4" /></Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => {setEditingTransaction(t); openForm()}}>
-                          <Edit className="mr-2 h-4 w-4 hover:text-white" /> Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDelete(t.id)} className="text-red-600">
-                          <Trash2 className="mr-2 h-4 w-4 hover:text-white" /> Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </CardContent>
-              </Card>
-            )
-          })
+                  </CardContent>
+                </Card>
+              )
+            })
+          ) : (
+            <div className="overflow-x-auto mb-20">
+              <table className="w-full text-sm border-collapse">
+                {/* ===== TABLE HEADER ===== */}
+                <thead className="bg-muted">
+                  <tr className="text-left">
+                    <th className="border border-gray-300 px-4 py-3 font-semibold min-w-40">Date ({useBSDate ? "BS" : "AD"})</th>
+                    <th className="border border-gray-300 px-4 py-3 font-semibold min-w-40">Account</th>
+                    <th className="border border-gray-300 px-4 py-3 font-semibold min-w-40">Category</th>
+                    <th className="border border-gray-300 px-4 py-3 font-semibold min-w-40">Income ({getCurrency()})</th>
+                    <th className="border border-gray-300 px-4 py-3 font-semibold min-w-40">Expense ({getCurrency()})</th>
+                    <th className="border border-gray-300 px-4 py-3 font-semibold min-w-40">Balance ({getCurrency()})</th>
+                    <th className="border border-gray-300 px-4 py-3 font-semibold max-xl:min-w-100">Description</th>
+                  </tr>
+                </thead>
+  
+                {/* ===== TABLE BODY ===== */}
+                <tbody>
+                  {(() => {
+                    let runningBalance = 0
+  
+                    return filteredTransactions.map((t, idx) => {
+                      const isIncome = t.type === "income"
+                      const income = isIncome ? t.amount : ""
+                      const expense = !isIncome ? t.amount : ""
+  
+                      // update running balance
+                      runningBalance += isIncome ? t.amount : -t.amount
+  
+                      const bsDate = new NepaliDate(new Date(t.date)).getBS()
+  
+                      return (
+                        <tr
+                          key={t.id}
+                          className={idx % 2 === 0 ? "bg-background" : "bg-muted/40"}
+                        >
+                          {/* Date */}
+                          <td className="border border-gray-300 px-4 py-2">
+                            {customDateFormat(t.date)}
+                          </td>
+
+                          {/* Account */}
+                          <td className="border border-gray-300 px-4 py-2">
+                            {getAccountName(t.account)}
+                          </td>
+
+                          {/* Category */}
+                          <td className="border border-gray-300 px-4 py-2">
+                            {getCategoryName(t.category)}
+                          </td>
+  
+                          {/* Income */}
+                          <td className="border border-gray-300 px-4 py-2 text-green-600 font-semibold">
+                            {income
+                              ? `+ ${t.amount.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+                              : ""}
+                          </td>
+  
+                          {/* Expense */}
+                          <td className="border border-gray-300 px-4 py-2 text-red-600 font-semibold">
+                            {expense
+                              ? `- ${t.amount.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+                              : ""}
+                          </td>
+  
+                          {/* Balance */}
+                          <td className="border border-gray-300 px-4 py-2 font-semibold">
+                            {runningBalance >= 0
+                              ? `+ ${runningBalance.toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+                              : `- ${Math.abs(runningBalance).toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`}
+                          </td>
+  
+                          {/* Description */}
+                          <td className="border border-gray-300 px-4 py-2">
+                            {t.description}
+                          </td>
+                        </tr>
+                      )
+                    })
+                  })()}
+                </tbody>
+              </table>
+            </div>
+          )
         )}
       </div>
 
