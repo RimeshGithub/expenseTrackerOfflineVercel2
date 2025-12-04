@@ -741,7 +741,7 @@ export default function SettingsPage() {
 
   const handleClearAllData = () => {
     const confirmClear = window.confirm(
-      "Are you sure you want to clear all data? This action cannot be undone and will permanently delete all your transactions.",
+      "Are you sure you want to clear all data? This action cannot be undone and will permanently delete all your data.",
     )
 
     if (!confirmClear) return
@@ -1112,7 +1112,7 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
 
-          <ReportGenerator transactions={filteredTransactions} />
+          <ReportGenerator transactions={transactions} />
           
           <Card id="accountManager">
             <CardHeader>
