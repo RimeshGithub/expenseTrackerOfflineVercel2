@@ -855,6 +855,8 @@ export async function generatePDFReport(data: ReportData) {
       doc.setTextColor(COLORS.textSecondary[0], COLORS.textSecondary[1], COLORS.textSecondary[2])
       doc.text(m, 25, tableY)
       
+      doc.setFont("helvetica", "bold")
+      
       if (monthlyData[m].income > 0) {
         doc.setTextColor(COLORS.success[0], COLORS.success[1], COLORS.success[2])
       } else {
@@ -869,7 +871,6 @@ export async function generatePDFReport(data: ReportData) {
       }
       doc.text(`${data.currency} ${monthlyData[m].expenses.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, pageWidth - 100, tableY)
       
-      doc.setFont("helvetica", "bold")
       const balance = monthlyData[m].income - monthlyData[m].expenses
       doc.setTextColor(COLORS.textPrimary[0], COLORS.textPrimary[1], COLORS.textPrimary[2])
       doc.text(`${balance >= 0 ? '+ ' : '- '}${data.currency} ${(Math.abs(balance)).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, pageWidth - 60, tableY)
@@ -950,7 +951,7 @@ export async function generatePDFReport(data: ReportData) {
   }
 
   // === Card container ===
-  const accountTableHeight = pageHeight - 70
+  const accountTableHeight = pageHeight - 65
   drawCard(doc, 15, yPosition, pageWidth - 30, accountTableHeight, true)
 
   let txnY = yPosition + 10
@@ -962,13 +963,15 @@ export async function generatePDFReport(data: ReportData) {
 
   // === Table Rows ===
   accountRows.forEach((row, idx) => {
-    if (txnY > pageHeight - 20) {
+    if (txnY > pageHeight - 30) {
       doc.addPage()
 
       drawCard(doc, 15, 20, pageWidth - 30, pageHeight - 40, true)
 
       txnY = 30
       drawAccountTableHeader(txnY)
+      doc.setFont("helvetica", "normal")
+      doc.setFontSize(8)
       txnY += 12
     }
 
@@ -1017,7 +1020,7 @@ export async function generatePDFReport(data: ReportData) {
   })
 
   // === SUMMARY ROW ===
-  if (txnY > pageHeight - 20) {
+  if (txnY > pageHeight - 30) {
     doc.addPage()
     drawCard(doc, 15, 20, pageWidth - 30, pageHeight - 40, true)
     txnY = 30
@@ -1102,7 +1105,7 @@ export async function generatePDFReport(data: ReportData) {
   }
 
   // === Card container ===
-  const txnTableHeight = pageHeight - 70
+  const txnTableHeight = pageHeight - 65
   drawCard(doc, 15, yPosition, pageWidth - 30, txnTableHeight, true)
 
   txnY = yPosition + 10
@@ -1114,13 +1117,15 @@ export async function generatePDFReport(data: ReportData) {
 
   // === Table Rows ===
   transactionRows.forEach((row, idx) => {
-    if (txnY > pageHeight - 20) {
+    if (txnY > pageHeight - 30) {
       doc.addPage()
 
       drawCard(doc, 15, 20, pageWidth - 30, pageHeight - 40, true)
 
       txnY = 30
       drawTxnTableHeader(txnY)
+      doc.setFont("helvetica", "normal")
+      doc.setFontSize(8)
       txnY += 12
     }
 
@@ -1174,7 +1179,7 @@ export async function generatePDFReport(data: ReportData) {
   })
 
   // === SUMMARY ROW ===
-  if (txnY > pageHeight - 20) {
+  if (txnY > pageHeight - 30) {
     doc.addPage()
     drawCard(doc, 15, 20, pageWidth - 30, pageHeight - 40, true)
     txnY = 30
