@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import {
@@ -40,6 +40,7 @@ const navigation = [
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname()
+  const scrollRef = useRef(null)
 
   const { isOpen, open, close } = useSidebarStore()
 
@@ -56,7 +57,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const Sidebar = ({ mobile = false }: { mobile?: boolean }) => (
     <div className={cn("flex flex-col h-full overflow-auto", mobile ? "py-4" : "")}>
-      <div className="flex items-center gap-2 px-4 py-6">
+      <div className="flex items-center gap-2 px-7 py-6">
         <Wallet className="h-8 w-8 text-primary" />
         <span className="text-xl font-bold">NepaliWallet</span>
       </div>
@@ -116,13 +117,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="flex h-screen bg-background">
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex lg:w-64 lg:flex-col lg:border-r lg:bg-card">
+      <div className="hidden lg:flex lg:w-64 lg:flex-col lg:border-r lg:bg-card pt-3">
         <Sidebar />
       </div>
 
       {/* Mobile Sidebar */}
       <Sheet open={isOpen} onOpenChange={(v) => (v ? open() : close())}>
-        <SheetContent side="left" className="p-0 w-64 pt-8">
+        <SheetContent side="left" className="p-0 w-64 pt-2">
           <Sidebar mobile />
         </SheetContent>
       </Sheet>
@@ -130,7 +131,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile Header */}
-        <div className="lg:hidden flex items-center justify-between p-2 border-b bg-card max-sm:pt-10">
+        <div className="lg:hidden flex items-center justify-between p-2 border-b bg-card">
           <Sheet open={isOpen} onOpenChange={(v) => (v ? open() : close())}>
             <SheetTrigger asChild>
               <Button variant="ghost" onClick={open} className="h-12 w-12">
@@ -146,8 +147,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto p-4 lg:p-6">
-          {children}
+        <main ref={scrollRef} className="flex-1 overflow-auto p-4 lg:p-6">
+          {typeof children === "function"
+            ? children({ scrollRef })
+            : children
+          }
         </main>
       </div>
     </div>
