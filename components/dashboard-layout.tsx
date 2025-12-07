@@ -7,7 +7,6 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import {
   Home,
   Plus,
-  TrendingUp,
   Settings,
   Download,
   Menu,
@@ -58,8 +57,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const Sidebar = ({ mobile = false }: { mobile?: boolean }) => (
     <div className={cn("flex flex-col h-full overflow-auto", mobile ? "py-4" : "")}>
       <div className="flex items-center gap-2 px-4 py-6">
-        <TrendingUp className="h-8 w-8 text-primary" />
-        <span className="text-xl font-bold">ExpenseTracker</span>
+        <Wallet className="h-8 w-8 text-primary" />
+        <span className="text-xl font-bold">NepaliWallet</span>
       </div>
 
       <nav className="flex-1 px-4 space-y-2 mb-5">
@@ -140,8 +139,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </SheetTrigger>
           </Sheet>
           <div className="flex items-center gap-2">
-            <TrendingUp className="h-6 w-6 text-primary" />
-            <span className="font-bold">ExpenseTracker</span>
+            <Wallet className="h-6 w-6 text-primary" />
+            <span className="font-bold">NepaliWallet</span>
           </div>
           <div className="w-10" /> {/* Spacer for centering */}
         </div>
